@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use clap::Parser;
+use clap::{CommandFactory, Parser, error::ErrorKind};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -17,6 +17,14 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
+    let mut command = Cli::command();
 
     println!("{:?}", cli);
+
+    if cli.producers.len() != cli.sources.len() {
+        command.error(
+            ErrorKind::WrongNumberOfValues,
+            "Expected matching number of producers and sources",
+        ).exit()
+    }
 }
