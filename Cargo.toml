@@ -2,5 +2,7 @@
 name = "anno"
 version = "0.1.0"
 edition = "2021"
+description = "Annotates each line of a file according to one or more annotation data producers"
 
 [dependencies]
+clap = { version = "4.3.19", features = ["derive"] }
