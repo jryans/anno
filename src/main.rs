@@ -21,12 +21,18 @@ struct Cli {
     ///   `producer:/path/to/data/source?param=value`
     #[arg(short, long = "producer", id = "PRODUCER", verbatim_doc_comment)]
     producers: Vec<Url>,
+
+    #[command(flatten)]
+    verbose: clap_verbosity_flag::Verbosity,
 }
 
 fn main() {
-    env_logger::init();
-
     // TODO: Customise parsing to allow producer without trailing `:`
     let cli = Cli::parse();
+
+    env_logger::Builder::new()
+        .filter_level(cli.verbose.log_level_filter())
+        .init();
+
     debug!("{:?}", cli);
 }

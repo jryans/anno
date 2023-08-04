@@ -6,6 +6,7 @@ description = "Annotates each line of a file according to one or more annotation
 
 [dependencies]
 clap = { version = "4.3.19", features = ["derive"] }
+clap-verbosity-flag = "2.0.1"
 env_logger = "0.10.0"
 log = "0.4.19"
 url = "2.4.0"
