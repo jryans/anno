@@ -5,6 +5,7 @@ edition = "2021"
 description = "Annotates each line of a file according to one or more annotation data producers"
 
 [dependencies]
+anyhow = "1.0.72"
 clap = { version = "4.3.19", features = ["derive"] }
 clap-verbosity-flag = "2.0.1"
 env_logger = "0.10.0"

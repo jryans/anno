@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use anyhow::{Context, Ok, Result};
 use clap::Parser;
 use log::debug;
 use url::Url;
@@ -26,7 +27,7 @@ struct Cli {
     verbose: clap_verbosity_flag::Verbosity,
 }
 
-fn main() {
+fn main() -> Result<()> {
     // TODO: Customise parsing to allow producer without trailing `:`
     let cli = Cli::parse();
 
@@ -35,4 +36,27 @@ fn main() {
         .init();
 
     debug!("{:?}", cli);
+
+    if cli.producers.is_empty() {
+        eprintln!("Warning: No producers, displaying file without annotations");
+    }
+
+    // Read the file first to check line count
+    let target_content = std::fs::read_to_string(&cli.file).with_context(|| {
+        format!(
+            "Unable to read file to be annotated ({})",
+            cli.file.display()
+        )
+    })?;
+    let line_count = target_content.lines().count();
+    debug!("Lines: {}", line_count);
+
+    // TODO: Run producers
+
+    // Write file content with annotations added
+    for line in target_content.lines() {
+        println!("{}", line);
+    }
+
+    Ok(())
 }
