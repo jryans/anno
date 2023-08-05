@@ -1,6 +1,8 @@
+#![feature(absolute_path)]
+
 use std::{
     cmp::max,
-    path::PathBuf,
+    path::{PathBuf, self},
     str::{FromStr, Lines},
 };
 
@@ -47,7 +49,8 @@ fn main() -> Result<()> {
     }
 
     // Read the file first to check line count
-    let target_content = std::fs::read_to_string(&cli.file).with_context(|| {
+    let target_path = path::absolute(&cli.file)?;
+    let target_content = std::fs::read_to_string(&target_path).with_context(|| {
         format!(
             "Unable to read file to be annotated ({})",
             cli.file.display()
@@ -63,9 +66,11 @@ fn main() -> Result<()> {
         debug!("Producer: {:?}", producer);
         let command_name = format!("anno-{}", producer.name());
         let mut command = cmd!(&command_name);
+        command = command.env("ANNO_TARGET", target_path.to_str().unwrap());
+        command = command.env("ANNO_TARGET_LINES", target_line_count.to_string());
         command = command.env("ANNO_PRODUCER", producer.name());
         command = command.env("ANNO_SOURCE", producer.source());
-        command = command.env("ANNO_LINES", target_line_count.to_string());
+        debug!("Command: {:?}", command);
         let data = command
             .read()
             .with_context(|| format!("Annotation producer `{}` failed", &command_name))?;
