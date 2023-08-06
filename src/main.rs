@@ -65,9 +65,11 @@ fn main() -> Result<()> {
         debug!("Producer: {:?}", producer);
         let command_name = format!("anno-{}", producer.name());
         let mut command = cmd!(&command_name);
+        // TODO: Should we pass both used-entered and absolute versions...?
         command = command.env("ANNO_TARGET", target_path.to_str().unwrap());
         command = command.env("ANNO_TARGET_LINES", target_line_count.to_string());
         command = command.env("ANNO_PRODUCER", producer.name());
+        // TODO: Should this be absolute like `ANNO_TARGET`...?
         command = command.env("ANNO_SOURCE", producer.source());
         debug!("Command: {:?}", command);
         let data = command
