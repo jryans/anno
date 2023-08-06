@@ -1,8 +1,6 @@
-#![feature(absolute_path)]
-
 use std::{
     cmp::max,
-    path::{PathBuf, self},
+    path::PathBuf,
     str::{FromStr, Lines},
 };
 
@@ -10,6 +8,7 @@ use anyhow::{Context, Error, Ok, Result};
 use clap::Parser;
 use duct::cmd;
 use log::debug;
+use path_absolutize::*;
 use url::Url;
 
 #[derive(Parser, Debug)]
@@ -49,7 +48,7 @@ fn main() -> Result<()> {
     }
 
     // Read the file first to check line count
-    let target_path = path::absolute(&cli.file)?;
+    let target_path = cli.file.absolutize()?;
     let target_content = std::fs::read_to_string(&target_path).with_context(|| {
         format!(
             "Unable to read file to be annotated ({})",
