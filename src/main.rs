@@ -1,5 +1,6 @@
 use std::{
     cmp::max,
+    fs,
     path::PathBuf,
     str::{FromStr, Lines},
 };
@@ -49,7 +50,7 @@ fn main() -> Result<()> {
 
     // Read the file first to check line count
     let target_path = cli.file.absolutize()?;
-    let target_content = std::fs::read_to_string(&target_path).with_context(|| {
+    let target_content = fs::read_to_string(&target_path).with_context(|| {
         format!(
             "Unable to read file to be annotated ({})",
             cli.file.display()
