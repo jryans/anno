@@ -62,7 +62,7 @@ fn main() -> Result<()> {
     // Collect output from each producer
     // TODO: Run in parallel
     let mut produced_annotations = Vec::new();
-    for producer in cli.producers {
+    for producer in &cli.producers {
         debug!("Producer: {:?}", producer);
         let command_name = format!("anno-{}", producer.name());
         let mut command = cmd!(&command_name);
@@ -83,6 +83,16 @@ fn main() -> Result<()> {
         debug!("Annotations: {:?}", annotations);
         produced_annotations.push(annotations);
     }
+
+    // Write header
+    for producer_with_annotations in cli.producers.iter().zip(produced_annotations.iter()) {
+        print!(
+            "{:width$.width$} | ",
+            producer_with_annotations.0.name(),
+            width = producer_with_annotations.1.max_width
+        );
+    }
+    println!("");
 
     // Write file content with annotations added
     let mut produced_table: Vec<(Lines, usize)> = produced_annotations
