@@ -59,17 +59,23 @@ x | 58  |     })?;
 
 ## Included producers
 
-### Lines (`lines`)
+### Lines
+
+Usage: `-p lines:`
 
 The lines producer numbers the lines of the annotated file in order, just like
 you might see in an editor.
 
 ### Debug lines present
 
+Usage: `-p debug-lines-present:<path-to-debug-info`
+
 This producer takes a DWARF debug info file and checks whether each source line
 of the file being annotated is present in the debug info's line table.
 
 ### Lines with computation
+
+Usage: `-p lines-with-computation:`
 
 This producer analyses C source files and annotates source lines where some
 notion of "computation" occurs.
