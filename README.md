@@ -57,6 +57,12 @@ x | 58  |     })?;
 ...
 ```
 
+## Additional features
+
+- Diff mode (`--diff`)\
+  Visually highlights differences between annotations from the first two
+  producers
+
 ## Included producers
 
 ### Numbers
@@ -125,8 +131,8 @@ annotated. Other output formats [may be added](#future-work) in the future.
 
 ## Future work
 
-* [ ] Add incremental output format
-* [ ] Add editor integration with more complex output abilities
+- [ ] Add incremental output format
+- [ ] Add editor integration with more complex output abilities
 
 [install-rust]: https://www.rust-lang.org/tools/install
 [dbgcov]: https://github.com/stephenrkell/dbgcov

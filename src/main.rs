@@ -2,7 +2,7 @@ use std::{
     cmp::max,
     fs,
     path::PathBuf,
-    str::{FromStr, Lines},
+    str::{FromStr, Lines}, iter::Peekable,
 };
 
 use anyhow::{Context, Error, Ok, Result};
@@ -11,12 +11,14 @@ use duct::cmd;
 use log::debug;
 use path_absolutize::*;
 use url::Url;
+use yansi::{Color, Paint};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
 struct Cli {
     /// File to annotate
     file: PathBuf,
+
     /// Add an annotation data producer URI
     ///
     /// Several different URI formats are accepted, for example:
@@ -29,6 +31,10 @@ struct Cli {
     ///   `producer:/path/to/data/source?param=value`
     #[arg(short, long = "producer", id = "PRODUCER", verbatim_doc_comment)]
     producers: Vec<Producer>,
+
+    /// Highlight differences in annotations between the first two producers
+    #[arg(long)]
+    diff: bool,
 
     #[command(flatten)]
     verbose: clap_verbosity_flag::Verbosity,
@@ -95,18 +101,48 @@ fn main() -> Result<()> {
     println!("");
 
     // Write file content with annotations added
-    let mut produced_table: Vec<(Lines, usize)> = produced_annotations
+    let mut produced_table: Vec<(Peekable<Lines>, usize)> = produced_annotations
         .iter()
-        .map(|a| (a.data.lines(), a.max_width))
+        .map(|a| (a.data.lines().peekable(), a.max_width))
         .collect();
+    let diffing = cli.diff && produced_table.len() >= 2;
     for line in target_content.lines() {
-        for produced_lines in &mut produced_table {
-            print!(
-                "{:width$} | ",
-                produced_lines.0.next().unwrap(),
-                width = produced_lines.1
-            );
+        let mut before_annotation = None;
+        let mut after_annotation = None;
+
+        // Track before and after annotations in diff mode
+        if diffing {
+            before_annotation = produced_table.get_mut(0).map(|p| *p.0.peek().unwrap());
+            after_annotation = produced_table.get_mut(1).map(|p| *p.0.peek().unwrap());
         }
+
+        for i in 0..produced_table.len() {
+            let annotation = produced_table.get_mut(i).unwrap().0.next().unwrap();
+            let mut painted_annotation = Paint::new(annotation);
+
+            // Highlight any differences in diff mode
+            if diffing {
+                if i == 0 {
+                    if let Some(after_annotation) = after_annotation {
+                        if annotation != after_annotation {
+                            painted_annotation = painted_annotation.fg(Color::Red).bold();
+                        }
+                    }
+                }
+                if i == 1 {
+                    if let Some(before_annotation) = before_annotation {
+                        if annotation != before_annotation {
+                            painted_annotation = painted_annotation.fg(Color::Green).bold();
+                        }
+                    }
+                }
+            }
+
+            // Write current producer's annotation value
+            print!("{:width$} | ", painted_annotation, width = produced_table.get(i).unwrap().1);
+        }
+
+        // Write line from file being annotated
         println!("{}", line);
     }
 
