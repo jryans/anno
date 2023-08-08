@@ -25,7 +25,7 @@ producers you are interested in. For example, the following uses the simple
 `lines` producer which adds lines numbers:
 
 ```
-$ anno src/main.rs -p lines:
+$ anno src/main.rs -p numbers:
 lin |
 1   | use std::{
 2   |     cmp::max,
@@ -44,7 +44,7 @@ Multiple producers can be supplied as well. The annotations from each producer
 are aggregated, with producer's data shown in a separate column:
 
 ```
-$ anno src/main.rs -p debug-lines-present:<path-to-debug-info> -p lines:
+$ anno src/main.rs -p debug-line-table:<path-to-debug-info> -p numbers:
 ...
   | 51  |     // Read the file first to check line count
 x | 52  |     let target_path = cli.file.absolutize()?;
@@ -59,23 +59,23 @@ x | 58  |     })?;
 
 ## Included producers
 
-### Lines
+### Numbers
 
-Usage: `-p lines:`
+Usage: `-p numbers:`
 
-The lines producer numbers the lines of the annotated file in order, just like
-you might see in an editor.
+This producer numbers the lines of the annotated file in order, just like you
+might see in an editor.
 
-### Debug lines present
+### Debug line table
 
-Usage: `-p debug-lines-present:<path-to-debug-info`
+Usage: `-p debug-line-table:<path-to-debug-info`
 
 This producer takes a DWARF debug info file and checks whether each source line
 of the file being annotated is present in the debug info's line table.
 
-### Lines with computation
+### Source computation
 
-Usage: `-p lines-with-computation:`
+Usage: `-p source-computation:`
 
 This producer analyses C source files and annotates source lines where some
 notion of "computation" occurs.
