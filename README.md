@@ -26,7 +26,7 @@ producers you are interested in. For example, the following uses the simple
 
 ```
 $ anno src/main.rs -p numbers:
-lin |
+num |
 1   | use std::{
 2   |     cmp::max,
 3   |     fs,
