@@ -133,6 +133,8 @@ annotated. Other output formats [may be added](#future-work) in the future.
 
 - [ ] Add incremental output format
 - [ ] Add editor integration with more complex output abilities
+- [ ] Add [Compiler Explorer][ce] integration
 
 [install-rust]: https://www.rust-lang.org/tools/install
 [dbgcov]: https://github.com/stephenrkell/dbgcov
+[ce]: https://github.com/compiler-explorer/compiler-explorer
