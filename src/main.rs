@@ -36,6 +36,12 @@ struct Cli {
     #[arg(long)]
     diff: bool,
 
+    /// Only show lines with differences between the first two producers
+    // TODO: Treat `lines` as special built-in that doesn't get diffed...?
+    // Or somehow have producers report if they can be diffed
+    #[arg(long)]
+    diff_only: bool,
+
     #[command(flatten)]
     verbose: clap_verbosity_flag::Verbosity,
 }
@@ -111,9 +117,18 @@ fn main() -> Result<()> {
         let mut after_annotation = None;
 
         // Track before and after annotations in diff mode
-        if diffing {
+        if diffing || cli.diff_only {
             before_annotation = produced_table.get_mut(0).map(|p| *p.0.peek().unwrap());
             after_annotation = produced_table.get_mut(1).map(|p| *p.0.peek().unwrap());
+        }
+
+        // Skip line if all annotations match in diff only mode
+        if cli.diff_only && before_annotation == after_annotation {
+            // Advance each column's iterator
+            for column in produced_table.iter_mut() {
+                column.0.next();
+            }
+            continue;
         }
 
         for i in 0..produced_table.len() {

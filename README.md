@@ -68,6 +68,9 @@ x | 58  |     })?;
     alt="Example of diff mode with visual highlighting to denote differences in annotations"
     src="https://github.com/jryans/anno/assets/279572/5fabdaac-4861-467a-adb9-b8ac139f10d8">
 
+- Diff only mode (`--diff-only`)\
+  Only show lines with differences between the first two producers
+
 ## Included producers
 
 ### Numbers
