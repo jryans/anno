@@ -1,4 +1,4 @@
-use std::{collections::HashSet, env, fs, path::PathBuf, process::ExitCode};
+use std::{env, fs, path::PathBuf, process::ExitCode};
 
 use anyhow::{Context, Result};
 use duct::cmd;
@@ -13,24 +13,25 @@ fn main() -> Result<ExitCode> {
         return Ok(ExitCode::FAILURE);
     };
 
-    let lines_with_computation = collect_lines(&source_file_path)?;
-
     let line_count: usize = env::var("ANNO_TARGET_LINES")?.parse()?;
+    let defined_variables_per_line =
+        collect_defined_variables_per_line(&source_file_path, line_count)?;
+
     for i in 0..line_count {
-        if lines_with_computation.contains(&(i + 1)) {
-            println!("x");
-        } else {
-            println!(" ");
-        }
+        let defined_variables = &defined_variables_per_line[i];
+        println!("{}", defined_variables.join(" "));
     }
     Ok(ExitCode::SUCCESS)
 }
 
-fn collect_lines(source_file_path: &PathBuf) -> Result<HashSet<usize>> {
+fn collect_defined_variables_per_line(
+    source_file_path: &PathBuf,
+    line_count: usize,
+) -> Result<Vec<Vec<String>>> {
     // TODO: Change `dbgcov` to only print to stdout by default...?
     let preprocessed_file_path = source_file_path.with_extension("i");
 
-    // Call `dbgcov` to report source code regions with computation
+    // Call `dbgcov` to report source code variable definition regions
     // ${CC} $(~/Projects/dbgcov/bin/dbgcov-cflags) ${CFLAGS} -std=c99 -E -o example.i example.c
     let cc = env::var("CC").unwrap_or("cc".to_string());
     let dbgcov_cflags = cmd!("dbgcov-cflags")
@@ -53,7 +54,7 @@ fn collect_lines(source_file_path: &PathBuf) -> Result<HashSet<usize>> {
     let dbg_command_debug = format!("{:?}", dbgcov_command);
     dbgcov_command.run().with_context(|| {
         format!(
-            "Running `dbgcov` (via {}) to collect regions with computation failed",
+            "Running `dbgcov` (via {}) to collect variable definition regions failed",
             dbg_command_debug,
         )
     })?;
@@ -62,21 +63,23 @@ fn collect_lines(source_file_path: &PathBuf) -> Result<HashSet<usize>> {
     let regions = fs::read_to_string(&report_path)
         .with_context(|| format!("Unable to read `dbgcov` report ({})", report_path.display()))?;
 
-    // Collect set of lines with computation
-    let mut lines_with_computation = HashSet::new();
+    // Collect defined variables for each line
+    let mut defined_variables_per_line: Vec<Vec<String>> = Vec::new();
+    defined_variables_per_line.resize_with(line_count, Default::default);
     for regions_line in regions.lines() {
         // Line format:
         // start as `file:line:column`\t
         // end as `file:line:column`\t
-        // kind (e.g. `Computation`)\t
-        // expression type
+        // kind (e.g. `MustBeDefined`)\t
+        // variable as `<function>, <variable>, decl <file>:<line>, unit <file>`
         let mut region_line_parts = regions_line.split('\t');
         let region_start = region_line_parts.next().unwrap();
         let region_end = region_line_parts.next().unwrap();
         let region_kind = region_line_parts.next().unwrap();
+        let variable_description = region_line_parts.next().unwrap();
 
-        // Ignore non-computation regions
-        if region_kind != "Computation" {
+        // Ignore non-definition regions
+        if region_kind != "MustBeDefined" {
             continue;
         }
 
@@ -87,13 +90,18 @@ fn collect_lines(source_file_path: &PathBuf) -> Result<HashSet<usize>> {
             continue;
         }
 
+        let mut variable_description_parts = variable_description.split(", ");
+        let variable_name = variable_description_parts.nth(1).unwrap();
+
         debug!("Matching line: {}", regions_line);
+        // Region lines are 1-based
         let region_start_line: usize = region_start_parts.next().unwrap().parse()?;
         let region_end_line: usize = region_end.split(':').nth(1).unwrap().parse()?;
         for line in region_start_line..=region_end_line {
-            lines_with_computation.insert(line);
+            let defined_variables = &mut defined_variables_per_line[line - 1];
+            defined_variables.push(variable_name.to_string());
         }
     }
 
-    Ok(lines_with_computation)
+    Ok(defined_variables_per_line)
 }

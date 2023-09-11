@@ -98,6 +98,17 @@ You will need to have `dbgcov-cflags` from [`dbgcov`][dbgcov] in your `PATH`.
 The `CC` environment variable (or `cc` command) will need to point to a version
 of `cc` from GCC.
 
+### Source must be defined
+
+Usage: `-p source-must-be-defined:`
+
+This producer analyses C source files and collects all variables which must be
+defined on each source line.
+
+You will need to have `dbgcov-cflags` from [`dbgcov`][dbgcov] in your `PATH`.
+The `CC` environment variable (or `cc` command) will need to point to a version
+of `cc` from GCC.
+
 ## Producer URI syntax
 
 Producers are currently enabled via the `-p` option which accepts a URI-based
