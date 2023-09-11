@@ -73,10 +73,17 @@ fn collect_lines(source_file_path: &PathBuf) -> Result<HashSet<usize>> {
         // Line format:
         // start as `file:line:column`\t
         // end as `file:line:column`\t
+        // kind (e.g. `Computation`)\t
         // expression type
         let mut region_line_parts = regions_with_computation_line.split('\t');
         let region_start = region_line_parts.next().unwrap();
         let region_end = region_line_parts.next().unwrap();
+        let region_kind = region_line_parts.next().unwrap();
+
+        // Ignore non-computation regions
+        if region_kind != "Computation" {
+            continue;
+        }
 
         let mut region_start_parts = region_start.split(':');
         let region_start_file = region_start_parts.next().unwrap();
