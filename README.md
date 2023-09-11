@@ -87,7 +87,7 @@ Usage: `-p debug-line-table:<path-to-debug-info`
 This producer takes a DWARF debug info file and checks whether each source line
 of the file being annotated is present in the debug info's line table.
 
-### Source computation
+### Source lines with computation
 
 Usage: `-p source-computation:`
 
@@ -98,7 +98,7 @@ You will need to have `dbgcov-cflags` from [`dbgcov`][dbgcov] in your `PATH`.
 The `CC` environment variable (or `cc` command) will need to point to a version
 of `cc` from GCC.
 
-### Source must be defined
+### Source variables must be defined
 
 Usage: `-p source-must-be-defined:`
 
