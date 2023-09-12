@@ -100,7 +100,7 @@ of `cc` from GCC.
 
 ### Source variables must be defined
 
-Usage: `-p source-must-be-defined:`
+Usage: `-p source-vars-must-be-defined:`
 
 This producer analyses C source files and collects all variables which must be
 defined on each source line.
