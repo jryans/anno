@@ -19,6 +19,10 @@ fn main() -> Result<ExitCode> {
 
     for i in 0..line_count {
         let defined_variables = &defined_variables_per_line[i];
+        if defined_variables.is_empty() {
+            println!(" ");
+            continue;
+        }
         println!("{}", defined_variables.join(" "));
     }
     Ok(ExitCode::SUCCESS)
