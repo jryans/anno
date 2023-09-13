@@ -1,0 +1,13 @@
+[package]
+name = "anno-numbers"
+version = "0.1.0"
+edition = "2021"
+authors = ["J. Ryan Stinnett <jryans@gmail.com>"]
+repository = "https://github.com/jryans/anno"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+anyhow = "1.0.72"
+
+[profile.dev]
+split-debuginfo = "packed"
