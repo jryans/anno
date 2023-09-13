@@ -98,7 +98,7 @@ fn collect_defined_variables_per_line(
         let variable_name = variable_description_parts.nth(1).unwrap();
 
         debug!("Matching line: {}", regions_line);
-        // Region lines are 1-based
+        // Lines are 1-based
         let region_start_line: usize = region_start_parts.next().unwrap().parse()?;
         let region_end_line: usize = region_end.split(':').nth(1).unwrap().parse()?;
         for line in region_start_line..=region_end_line {
