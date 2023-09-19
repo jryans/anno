@@ -27,7 +27,7 @@ fn main() -> Result<()> {
     let line_count: usize = env::var("ANNO_TARGET_LINES")?.parse()?;
     let variable_locations = collect_variable_locations(&object);
     let defined_variables_per_line =
-        to_defined_variables_per_line(&variable_locations, &source_file_path, line_count);
+        defined_variables_per_line(&variable_locations, &source_file_path, line_count);
 
     for i in 0..line_count {
         let defined_variables = &defined_variables_per_line[i];
@@ -98,7 +98,7 @@ fn collect_variable_locations(file: &object::File) -> Stats {
     stats
 }
 
-fn to_defined_variables_per_line(
+fn defined_variables_per_line(
     variable_locations: &Stats,
     source_file_path: &PathBuf,
     line_count: usize,
