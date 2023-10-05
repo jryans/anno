@@ -119,8 +119,8 @@ fn defined_variables_per_line(
                 debug!(", {}", &inline);
             }
             debug!(
-                ", {}, decl {}:{}, unit {}",
-                &var.name, &var.decl_file, &var.decl_line, &func.unit_name
+                ", {}, decl {}:{}",
+                &var.name, &var.decl_file, &var.decl_line
             );
             debug!("Source line set: {:?}", &var.extra.source_line_set_covered);
             // Lines are 1-based

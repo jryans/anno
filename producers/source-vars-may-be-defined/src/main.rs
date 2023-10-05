@@ -75,7 +75,7 @@ fn collect_defined_variables_per_line(
         // start as `file:line:column`\t
         // end as `file:line:column`\t
         // kind (e.g. `MustBeDefined`)\t
-        // variable as `<function>, <variable>, decl <file>:<line>, unit <file>`
+        // variable as `<function>, <variable>, decl <file>:<line>`
         let mut region_line_parts = regions_line.split('\t');
         let region_start = region_line_parts.next().unwrap();
         let region_end = region_line_parts.next().unwrap();
