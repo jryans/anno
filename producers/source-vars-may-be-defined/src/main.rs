@@ -2,6 +2,7 @@ use std::{env, fs, path::PathBuf, process::ExitCode};
 
 use anyhow::{Context, Result};
 use duct::cmd;
+use linked_hash_set::LinkedHashSet;
 use log::debug;
 
 fn main() -> Result<ExitCode> {
@@ -23,7 +24,8 @@ fn main() -> Result<ExitCode> {
             println!(" ");
             continue;
         }
-        println!("{}", defined_variables.join(" "));
+        let collected_variables = defined_variables.iter().cloned().collect::<Vec<_>>();
+        println!("{}", collected_variables.join(" "));
     }
     Ok(ExitCode::SUCCESS)
 }
@@ -31,7 +33,7 @@ fn main() -> Result<ExitCode> {
 fn collect_defined_variables_per_line(
     source_file_path: &PathBuf,
     line_count: usize,
-) -> Result<Vec<Vec<String>>> {
+) -> Result<Vec<LinkedHashSet<String>>> {
     // TODO: Change `dbgcov` to only print to stdout by default...?
     let preprocessed_file_path = source_file_path.with_extension("i");
 
@@ -68,7 +70,7 @@ fn collect_defined_variables_per_line(
         .with_context(|| format!("Unable to read `dbgcov` report ({})", report_path.display()))?;
 
     // Collect defined variables for each line
-    let mut defined_variables_per_line: Vec<Vec<String>> = Vec::new();
+    let mut defined_variables_per_line: Vec<LinkedHashSet<String>> = Vec::new();
     defined_variables_per_line.resize_with(line_count, Default::default);
     for regions_line in regions.lines() {
         // Line format:
@@ -103,7 +105,9 @@ fn collect_defined_variables_per_line(
         let region_end_line: usize = region_end.split(':').nth(1).unwrap().parse()?;
         for line in region_start_line..=region_end_line {
             let defined_variables = &mut defined_variables_per_line[line - 1];
-            defined_variables.push(variable_name.to_string());
+            if !defined_variables.contains(variable_name) {
+                defined_variables.insert(variable_name.to_string());
+            }
         }
     }
 

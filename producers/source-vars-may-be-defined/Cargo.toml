@@ -10,6 +10,7 @@ license = "MIT OR Apache-2.0"
 anyhow = "1.0.72"
 duct = "0.13.6"
 env_logger = "0.10.0"
+linked_hash_set = "0.1.4"
 log = "0.4.19"
 
 [profile.dev]
