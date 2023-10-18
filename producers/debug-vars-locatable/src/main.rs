@@ -5,6 +5,7 @@ use std::{
 
 use anyhow::{Context, Result};
 use debuginfo_quality::{evaluate_info, Stats, StatsBundle};
+use linked_hash_set::LinkedHashSet;
 use log::{debug, trace};
 use object::{Object, ObjectSection};
 use typed_arena::Arena;
@@ -35,7 +36,8 @@ fn main() -> Result<()> {
             println!(" ");
             continue;
         }
-        println!("{}", defined_variables.join(" "));
+        let collected_variables = defined_variables.iter().cloned().collect::<Vec<_>>();
+        println!("{}", collected_variables.join(" "));
     }
     Ok(())
 }
@@ -102,8 +104,8 @@ fn defined_variables_per_line(
     variable_locations: &Stats,
     source_file_path: &PathBuf,
     line_count: usize,
-) -> Vec<Vec<String>> {
-    let mut defined_variables_per_line: Vec<Vec<String>> = Vec::new();
+) -> Vec<LinkedHashSet<String>> {
+    let mut defined_variables_per_line: Vec<LinkedHashSet<String>> = Vec::new();
     defined_variables_per_line.resize_with(line_count, Default::default);
 
     for func in &variable_locations.output {
@@ -126,7 +128,7 @@ fn defined_variables_per_line(
             // Lines are 1-based
             for line in &var.extra.source_line_set_covered {
                 let defined_variables = &mut defined_variables_per_line[(line - 1) as usize];
-                defined_variables.push(var.name.clone());
+                defined_variables.insert(var.name.clone());
             }
         }
     }

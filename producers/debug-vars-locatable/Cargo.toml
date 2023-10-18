@@ -11,6 +11,7 @@ anyhow = "1.0.72"
 debuginfo-quality = { path = "../../../debuginfo-quality" }
 env_logger = "0.10.0"
 gimli = "0.16.1"
+linked_hash_set = "0.1.4"
 log = "0.4.19"
 memmap2 = "0.7.1"
 object = "0.31.1"
