@@ -89,7 +89,11 @@ fn main() -> Result<()> {
         let data = command
             .read()
             .with_context(|| format!("Annotation producer `{}` failed", &command_name))?;
-        let max_width = data.lines().fold(0, |acc, line| max(acc, line.len()));
+        // Cap width at 30 characters to avoid huge columns
+        let max_width = data
+            .lines()
+            .fold(0, |acc, line| max(acc, line.len()))
+            .min(30);
         // For initial basic annotation format, ensure we have an annotation for every target line
         assert!(data.lines().count() == target_line_count);
         let annotations = Annotations { data, max_width };
@@ -156,7 +160,7 @@ fn main() -> Result<()> {
 
             // Write current producer's annotation value
             print!(
-                "{:width$} | ",
+                "{:width$.width$} | ",
                 painted_annotation,
                 width = produced_table.get(i).unwrap().1
             );
