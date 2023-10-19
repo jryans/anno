@@ -1,8 +1,9 @@
 use std::{
     cmp::max,
     fs,
+    iter::Peekable,
     path::PathBuf,
-    str::{FromStr, Lines}, iter::Peekable,
+    str::{FromStr, Lines},
 };
 
 use anyhow::{Context, Error, Ok, Result};
@@ -154,7 +155,11 @@ fn main() -> Result<()> {
             }
 
             // Write current producer's annotation value
-            print!("{:width$} | ", painted_annotation, width = produced_table.get(i).unwrap().1);
+            print!(
+                "{:width$} | ",
+                painted_annotation,
+                width = produced_table.get(i).unwrap().1
+            );
         }
 
         // Write line from file being annotated
