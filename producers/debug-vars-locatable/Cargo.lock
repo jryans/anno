@@ -29,6 +29,7 @@ dependencies = [
  "log",
  "memmap2 0.7.1",
  "object 0.31.1",
+ "path-absolutize",
  "typed-arena",
 ]
 
