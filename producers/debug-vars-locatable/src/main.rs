@@ -4,7 +4,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use debuginfo_quality::{evaluate_info, Stats, StatsBundle};
+use debuginfo_quality::{evaluate_info, Stats};
 use linked_hash_set::LinkedHashSet;
 use log::{debug, trace};
 use object::{Object, ObjectSection};
@@ -66,11 +66,7 @@ fn collect_variable_locations(file: &object::File) -> Stats {
     let mut opt = debuginfo_quality::Opt::default();
     opt.variables = true;
 
-    let mut stats = Stats {
-        bundle: StatsBundle::default(),
-        opt: opt.clone(),
-        output: Vec::new(),
-    };
+    let mut stats = Stats::new(opt.clone());
 
     let arena = Arena::new();
 
