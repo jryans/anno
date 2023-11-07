@@ -8,6 +8,7 @@ use debuginfo_quality::{evaluate_info, Stats};
 use linked_hash_set::LinkedHashSet;
 use log::{debug, trace};
 use object::{Object, ObjectSection};
+use path_absolutize::Absolutize;
 use typed_arena::Arena;
 
 fn main() -> Result<()> {
@@ -106,9 +107,17 @@ fn defined_variables_per_line(
 
     for func in &variable_locations.output {
         for var in &func.variables {
-            // Skip variables from other source files
-            let decl_file_path = Path::new(&var.decl_dir).join(&var.decl_file);
+            // Some paths are already absolute, others are relative to compilation
+            let mut decl_file_path = if Path::new(&var.decl_dir).is_absolute() {
+                Path::new(&var.decl_dir).join(&var.decl_file)
+            } else {
+                Path::new(&func.unit_dir)
+                    .join(&var.decl_dir)
+                    .join(&var.decl_file)
+            };
+            decl_file_path = decl_file_path.absolutize().unwrap().to_path_buf();
             trace!("Var: {}, Decl path: {}", &var.name, decl_file_path.display());
+            // Skip variables from other source files
             if decl_file_path != *source_file_path {
                 continue;
             }
