@@ -82,14 +82,14 @@ might see in an editor.
 
 ### Debug line table
 
-Usage: `-p debug-line-table:<path-to-debug-info`
+Usage: `-p debug-line-table:<path-to-debug-info>`
 
 This producer takes a DWARF debug info file and checks whether each source line
 of the file being annotated is present in the debug info's line table.
 
 ### Debug variables locatable
 
-Usage: `-p debug-vars-locatable:<path-to-debug-info`
+Usage: `-p debug-vars-locatable:<path-to-debug-info>`
 
 This producer takes a DWARF debug info file and collects all variables which are
 locatable on each source line.
