@@ -127,6 +127,13 @@ You will need to have `dbgcov-cflags` from [`dbgcov`][dbgcov] in your `PATH`.
 The `CC` environment variable (or `cc` command) will need to point to a version
 of `cc` from GCC.
 
+### KLEE coverage
+
+Usage: `-p klee-coverage:<path-to-klee-output-dir>`
+
+This produces collates all `*.istats` files produced by KLEE and checks whether
+each source line has been covered.
+
 ## Producer URI syntax
 
 Producers are currently enabled via the `-p` option which accepts a URI-based
